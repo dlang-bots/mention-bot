@@ -354,8 +354,7 @@ async function work(body) {
   } else {
     createComment(data, message);
     // for now we only pick the best matching reviewer
-    reviewers = [reviewers[0]];
-    assignReviewer(data, reviewers);
+    assignReviewer(data, reviewers.slice(0, 1));
   }
 
   return;
