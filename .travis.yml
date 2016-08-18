@@ -5,6 +5,10 @@ cache:
         - node_modules
         - $NVM_DIR
 
+branches:
+  only:
+    - master
+
 node_js:
   - v5
   - v4
