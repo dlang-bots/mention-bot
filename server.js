@@ -122,7 +122,7 @@ async function work(body) {
   var repoConfig = {
     maxReviewers: 3,
     numFilesToCheck: 10,
-    userBlacklist: [],
+    userBlacklist: ["braddr"],
     userBlacklistForPR: [],
     userWhitelist: [],
     fileBlacklist: [],
