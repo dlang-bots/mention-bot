@@ -80,11 +80,11 @@ function defaultMessageGenerator(reviewers, pullRequester) {
   return util.format(
     '%s, thanks for your PR! ' +
     'By analyzing the annotation information on this pull request' +
-    ', we identified %s to be%s potential reviewer%s' +
-    'The PR was automatically assigned to first potential reviewer. %s: please reassign' +
-    'if you were identified mistakenly' +
-    '<br><br>. The DLang Bot is under development. If you experience any issues,' +
-    'open an issue at [its repo](https://github.com/dlang-bots/mention-bot)',
+    ', we identified %s to be%s potential reviewer%s. ' +
+    'The PR was automatically assigned to you, please reassign it ' +
+    'if you were identified mistakenly.' +
+    '<br><br>(The DLang Bot is under development. If you experience any issues, please ' +
+    'open an issue at [its repo](https://github.com/dlang-bots/mention-bot).)',
     pullRequester,
     buildMentionSentence(reviewers),
     reviewers.length > 1 ? '' : ' a',
