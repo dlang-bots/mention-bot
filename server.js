@@ -81,7 +81,7 @@ function defaultMessageGenerator(reviewers, pullRequester) {
     '%s, thanks for your PR! ' +
     'By analyzing the annotation information on this pull request' +
     ', we identified %s to be%s potential reviewer%s. ' +
-    'The PR was automatically assigned to you, please reassign it ' +
+    '@%s: The PR was automatically assigned to you, please reassign it ' +
     'if you were identified mistakenly.' +
     '<br><br>(The DLang Bot is under development. If you experience any issues, please ' +
     'open an issue at [its repo](https://github.com/dlang-bots/mention-bot).)',
@@ -353,6 +353,8 @@ async function work(body) {
     });
   } else {
     createComment(data, message);
+    // for now we only pick the best matching reviewer
+    reviewers = [reviewers[0]];
     assignReviewer(data, reviewers);
   }
 
