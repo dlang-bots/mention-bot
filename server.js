@@ -80,11 +80,16 @@ function defaultMessageGenerator(reviewers, pullRequester) {
   return util.format(
     '%s, thanks for your PR! ' +
     'By analyzing the annotation information on this pull request' +
-    ', we identified %s to be%s potential reviewer%s',
+    ', we identified %s to be%s potential reviewer%s' +
+    'The PR was automatically assigned to first potential reviewer. %s: please reassign' +
+    'if you were identified mistakenly' +
+    '<br><br>. The DLang Bot is under development. If you experience any issues,' +
+    'open an issue at [its repo](https://github.com/dlang-bots/mention-bot)',
     pullRequester,
     buildMentionSentence(reviewers),
     reviewers.length > 1 ? '' : ' a',
-    reviewers.length > 1 ? 's' : ''
+    reviewers.length > 1 ? 's' : '',
+    reviewers[0]
   );
 }
 
@@ -115,20 +120,20 @@ async function work(body) {
 
   // default config
   var repoConfig = {
-    maxReviewers: 3,
-    numFilesToCheck: 5,
+    maxReviewers: 5,
+    numFilesToCheck: 10,
     userBlacklist: [],
     userBlacklistForPR: [],
     userWhitelist: [],
     fileBlacklist: [],
     requiredOrgs: [],
     findPotentialReviewers: true,
-    actions: ['opened'],
+    actions: ['opened', 'synchronize'],
     skipAlreadyAssignedPR: false,
     skipAlreadyMentionedPR: false,
     delayed: false,
     delayedUntil: '3d',
-    assignToReviewer: false,
+    assignToReviewer: true,
     skipTitle: '',
     withLabel: '',
     skipCollaboratorPR: false,
