@@ -63,6 +63,16 @@ github.authenticate({
 
 var app = express();
 
+var dlangReviewers = {
+    "dlang/dmd": ["WalterBright", "MartinNowak", "yebblies", "AndrejMitrovic", "klickverbot", "9rnsr",
+            "andralex"],
+    "dlang/druntime": ["WalterBright", "MartinNowak", "yebblies", "AndrejMitrovic", "klickverbot", "9rnsr",
+            "andralex", "DmitryOlshansky", "jmdavis", "rainers", "schveiguy", "CyberShadow"],
+    "dlang/phobos": ["WalterBright", "MartinNowak", "yebblies", "AndrejMitrovic", "klickverbot", "9rnsr",
+            "andralex", "DmitryOlshansky", "jmdavis", "rainers", "schveiguy", "9il", "CyberShadow",
+                "Hackerpilot", "quickfur", "wilzbach"],
+}
+
 function buildMentionSentence(reviewers) {
   var atReviewers = reviewers.map(function(owner) { return '@' + owner; });
 
@@ -76,7 +86,7 @@ function buildMentionSentence(reviewers) {
   );
 }
 
-function defaultMessageGenerator(reviewers, pullRequester) {
+function defaultMessageGenerator(reviewers, pullRequester, assignee) {
   return util.format(
     '%s, thanks for your PR! ' +
     'By analyzing the annotation information on this pull request' +
@@ -89,11 +99,11 @@ function defaultMessageGenerator(reviewers, pullRequester) {
     buildMentionSentence(reviewers),
     reviewers.length > 1 ? '' : ' a',
     reviewers.length > 1 ? 's' : '',
-    reviewers[0]
+    assignee
   );
 }
 
-function configMessageGenerator(message, reviewers, pullRequester) {
+function configMessageGenerator(message, reviewers, pullRequester, assignee) {
   var withReviewers = message.replace(/@reviewers/g, buildMentionSentence(reviewers));
   return withReviewers.replace(/@pullRequester/g, pullRequester);
 }
@@ -249,19 +259,43 @@ async function work(body) {
     return;
   }
 
+  // use hard-coded reviewers for Phobos
+  var assignee;
+  if (dlangReviewers[data.repository.full_name])
+  {
+    var potentialReviewers = dlangReviewers[data.repository.full_name];
+    for (var i = 0; i < reviewers.length; i++)
+    {
+        if (potentialReviewers.indexOf(reviewers[i]) >= 0)
+        {
+            assignee = reviewers[i];
+            break;
+        }
+    };
+  }
+  // otherwise apply good luck and go with the first one
+  if (typeof(assignee) == "undefined")
+  {
+    assignee = reviewers[0];
+  }
+
+  console.log('Assignee: ', assignee);
+
   var message = null;
   if (repoConfig.message) {
     message = configMessageGenerator(
       repoConfig.message,
       reviewers,
-      '@' + data.pull_request.user.login
+      '@' + data.pull_request.user.login,
+      assignee
     );
   } else {
     message = messageGenerator(
       reviewers,
       '@' + data.pull_request.user.login, // pull-requester
       buildMentionSentence,
-      defaultMessageGenerator
+      defaultMessageGenerator,
+      assignee
     );
   }
 
@@ -354,7 +388,7 @@ async function work(body) {
   } else {
     createComment(data, message);
     // for now we only pick the best matching reviewer
-    assignReviewer(data, reviewers.slice(0, 1));
+    assignReviewer(data, [assignee]);
   }
 
   return;
