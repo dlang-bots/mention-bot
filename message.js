@@ -15,7 +15,8 @@ module.exports = function(
   reviewers: Array<string>,
   pullRequester: string,
   mentionSentenceBuilder: (reviewers: Array<string>) => string,
-  defaultMessageGenerator: (reviewers: Array<string>, pullRequester: string) => string
+  defaultMessageGenerator: (reviewers: Array<string>, pullRequester: string) => string,
+  assignee: string
 ): string {
 
   // This file is a place where you can change the way the message the bot
@@ -28,5 +29,5 @@ module.exports = function(
   //
   //   @hunkim, thanks! @georgecodes and @vjeux, please review this.
 
-	return defaultMessageGenerator(reviewers, pullRequester);
+	return defaultMessageGenerator(reviewers, pullRequester, assignee);
 };
